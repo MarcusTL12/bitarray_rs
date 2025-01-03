@@ -123,6 +123,15 @@ impl<const N: usize> BitArray<N> {
         }
     }
 
+    pub fn nbits_iter<const NBITS: u32>(&self) -> BitArrayNBitsIter<N, NBITS> {
+        BitArrayNBitsIter {
+            data: self.0,
+            chunk_ind: 0,
+            cur_chunk: self.0[0],
+            left_of_chunk: usize::BITS,
+        }
+    }
+
     pub fn get_nbit<const NBITS: u32>(&self, i: usize) -> usize {
         assert_eq!(usize::BITS % NBITS, 0);
 
