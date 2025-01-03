@@ -305,3 +305,32 @@ impl<const N: usize> Iterator for BitArrayTruesIter<N> {
         Some(self.total_ind)
     }
 }
+
+pub struct BitArrayNBitsIter<const N: usize, const NBITS: u32> {
+    data: [usize; N],
+    chunk_ind: usize,
+    cur_chunk: usize,
+    left_of_chunk: u32,
+}
+
+impl<const N: usize, const NBITS: u32> Iterator
+    for BitArrayNBitsIter<N, NBITS>
+{
+    type Item = usize;
+
+    fn next(&mut self) -> Option<usize> {
+        if self.left_of_chunk == 0 {
+            self.chunk_ind += 1;
+            self.cur_chunk = *self.data.get(self.chunk_ind)?;
+            self.left_of_chunk = usize::BITS / NBITS;
+        }
+
+        let mask = (!0) >> (usize::BITS - NBITS);
+
+        self.left_of_chunk -= 1;
+        let val = self.cur_chunk & mask;
+        self.cur_chunk >>= NBITS;
+
+        Some(val)
+    }
+}
