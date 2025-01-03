@@ -128,7 +128,7 @@ impl<const N: usize> BitArray<N> {
             data: self.0,
             chunk_ind: 0,
             cur_chunk: self.0[0],
-            left_of_chunk: usize::BITS,
+            left_of_chunk: usize::BITS / NBITS,
         }
     }
 
