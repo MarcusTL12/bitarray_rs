@@ -122,6 +122,36 @@ impl<const N: usize> BitArray<N> {
             total_ind: 0,
         }
     }
+
+    pub fn get_nbit<const NBITS: u32>(&self, i: usize) -> usize {
+        assert_eq!(usize::BITS % NBITS, 0);
+
+        let n_in_chunk = usize::BITS / NBITS;
+
+        let chunk_ind = i / n_in_chunk as usize;
+        let sub_ind = (i % n_in_chunk as usize) as u32;
+
+        let chunk = self.0[chunk_ind];
+
+        let mask = (!0) >> (usize::BITS - NBITS);
+
+        (chunk >> (sub_ind * NBITS)) & mask
+    }
+
+    pub fn set_nbit<const NBITS: u32>(&mut self, i: usize, val: usize) {
+        assert_eq!(usize::BITS % NBITS, 0);
+
+        let n_in_chunk = usize::BITS / NBITS;
+
+        let chunk_ind = i / n_in_chunk as usize;
+        let sub_ind = (i % n_in_chunk as usize) as u32;
+
+        let mask = ((!0) >> (usize::BITS - NBITS)) << (sub_ind * NBITS);
+
+        let chunk = self.0[chunk_ind];
+
+        self.0[chunk_ind] = (chunk & !mask) | (val << (sub_ind * NBITS));
+    }
 }
 
 impl<const N: usize> Default for BitArray<N> {
