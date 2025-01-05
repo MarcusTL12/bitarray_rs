@@ -4,7 +4,7 @@ use std::{
 };
 
 #[derive(Debug, Clone, Copy)]
-pub struct BitArray<const N: usize>([usize; N]);
+pub struct BitArray<const N: usize>(pub [usize; N]);
 
 impl<const N: usize> BitArray<N> {
     pub fn new() -> Self {
