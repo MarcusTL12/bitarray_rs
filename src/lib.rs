@@ -3,7 +3,7 @@ use std::{
     ops::{BitAnd, BitOr, BitXor, Index, Not},
 };
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct BitArray<const N: usize>(pub [usize; N]);
 
 impl<const N: usize> BitArray<N> {
