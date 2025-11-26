@@ -258,7 +258,7 @@ impl<const N: usize> Shr<u32> for BitArray<N> {
         if subshift > 0 {
             let mut carry: usize = 0;
 
-            for x in &mut self.0 {
+            for x in self.0.iter_mut().rev() {
                 let new_carry = *x;
                 *x = carry.funnel_shr(*x, subshift);
                 carry = new_carry;
@@ -286,7 +286,7 @@ impl<const N: usize> Shl<u32> for BitArray<N> {
         if subshift > 0 {
             let mut carry: usize = 0;
 
-            for x in self.0.iter_mut().rev() {
+            for x in self.0.iter_mut() {
                 let new_carry = *x;
                 *x = x.funnel_shl(carry, subshift);
                 carry = new_carry;
