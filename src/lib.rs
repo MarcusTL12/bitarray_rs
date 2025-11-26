@@ -288,7 +288,7 @@ impl<const N: usize> Shl<u32> for BitArray<N> {
 
             for x in self.0.iter_mut().rev() {
                 let new_carry = *x;
-                *x = x.funnel_shr(carry, subshift);
+                *x = x.funnel_shl(carry, subshift);
                 carry = new_carry;
             }
         }
