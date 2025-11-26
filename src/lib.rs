@@ -1,6 +1,8 @@
+#![feature(funnel_shifts)]
+
 use std::{
     fmt::Display,
-    ops::{BitAnd, BitOr, BitXor, Index, Not},
+    ops::{BitAnd, BitOr, BitXor, Index, Not, Shl, Shr},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -234,6 +236,64 @@ impl<const N: usize> Not for BitArray<N> {
 
     fn not(self) -> Self {
         Self(self.0.map(|x| !x))
+    }
+}
+
+impl<const N: usize> Shr<u32> for BitArray<N> {
+    type Output = Self;
+
+    fn shr(mut self, rhs: u32) -> Self::Output {
+        let supershift = rhs / usize::BITS;
+        let subshift = rhs % usize::BITS;
+
+        if supershift > 0 {
+            for i in (0..N).rev() {
+                self.0[i] = i
+                    .checked_sub(supershift as usize)
+                    .map(|j| *unsafe { self.0.get_unchecked(j) })
+                    .unwrap_or(0);
+            }
+        }
+
+        if subshift > 0 {
+            let mut carry: usize = 0;
+
+            for x in &mut self.0 {
+                let new_carry = *x;
+                *x = carry.funnel_shr(*x, subshift);
+                carry = new_carry;
+            }
+        }
+
+        self
+    }
+}
+
+impl<const N: usize> Shl<u32> for BitArray<N> {
+    type Output = Self;
+
+    fn shl(mut self, rhs: u32) -> Self::Output {
+        let supershift = rhs / usize::BITS;
+        let subshift = rhs % usize::BITS;
+
+        if supershift > 0 {
+            for i in 0..N {
+                self.0[i] =
+                    self.0.get(i + supershift as usize).cloned().unwrap_or(0);
+            }
+        }
+
+        if subshift > 0 {
+            let mut carry: usize = 0;
+
+            for x in self.0.iter_mut().rev() {
+                let new_carry = *x;
+                *x = x.funnel_shr(carry, subshift);
+                carry = new_carry;
+            }
+        }
+
+        self
     }
 }
 
