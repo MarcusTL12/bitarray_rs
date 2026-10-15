@@ -1,6 +1,7 @@
 use std::{
-    fmt::Display,
-    ops::{BitAnd, BitOr, BitOrAssign, BitXor, Index, Not, Shl, Shr},
+    fmt::Display, ops::{
+        BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Index, Not, Shl, Shr,
+    },
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -174,6 +175,16 @@ impl<const N: usize> Default for BitArray<N> {
     }
 }
 
+impl<const N: usize> From<usize> for BitArray<N> {
+    fn from(value: usize) -> Self {
+        let mut a = BitArray::new();
+
+        a.0[0] = value;
+
+        a
+    }
+}
+
 impl<const N: usize> Index<usize> for BitArray<N> {
     type Output = bool;
 
@@ -200,6 +211,14 @@ impl<const N: usize> BitOr for BitArray<N> {
     }
 }
 
+impl<const N: usize> BitOrAssign for BitArray<N> {
+    fn bitor_assign(&mut self, rhs: Self) {
+        for (a, b) in self.0.iter_mut().zip(rhs.0) {
+            *a |= b;
+        }
+    }
+}
+
 impl<const N: usize> BitAnd for BitArray<N> {
     type Output = Self;
 
@@ -214,6 +233,14 @@ impl<const N: usize> BitAnd for BitArray<N> {
     }
 }
 
+impl<const N: usize> BitAndAssign for BitArray<N> {
+    fn bitand_assign(&mut self, rhs: Self) {
+        for (a, b) in self.0.iter_mut().zip(rhs.0) {
+            *a &= b;
+        }
+    }
+}
+
 impl<const N: usize> BitXor for BitArray<N> {
     type Output = Self;
 
@@ -225,6 +252,14 @@ impl<const N: usize> BitXor for BitArray<N> {
         }
 
         Self(new_bits)
+    }
+}
+
+impl<const N: usize> BitXorAssign for BitArray<N> {
+    fn bitxor_assign(&mut self, rhs: Self) {
+        for (a, b) in self.0.iter_mut().zip(rhs.0) {
+            *a ^= b;
+        }
     }
 }
 
