@@ -1,6 +1,8 @@
 use std::{
-    fmt::Display, ops::{
-        BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Index, Not, Shl, Shr,
+    fmt::Display,
+    ops::{
+        BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Index,
+        Not, Shl, Shr,
     },
 };
 
