@@ -1,8 +1,6 @@
-#![feature(funnel_shifts)]
-
 use std::{
     fmt::Display,
-    ops::{BitAnd, BitOr, BitXor, Index, Not, Shl, Shr},
+    ops::{BitAnd, BitOr, BitOrAssign, BitXor, Index, Not, Shl, Shr},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -59,11 +57,16 @@ impl<const N: usize> BitArray<N> {
                 self.0[from_chunk_ind] &= !mask;
             }
 
-            for i in from_chunk_ind + 1..to_chunk_ind {
+            for x in self
+                .0
+                .iter_mut()
+                .take(to_chunk_ind)
+                .skip(from_chunk_ind + 1)
+            {
                 if val {
-                    self.0[i] = !0;
+                    *x = !0;
                 } else {
-                    self.0[i] = 0;
+                    *x = 0;
                 }
             }
 
@@ -189,9 +192,7 @@ impl<const N: usize> BitOr for BitArray<N> {
     fn bitor(self, rhs: Self) -> Self {
         let mut new_bits = [0; N];
 
-        for ((a, b), x) in
-            self.0.into_iter().zip(rhs.0.into_iter()).zip(&mut new_bits)
-        {
+        for ((a, b), x) in self.0.into_iter().zip(rhs.0).zip(&mut new_bits) {
             *x = a | b;
         }
 
@@ -205,9 +206,7 @@ impl<const N: usize> BitAnd for BitArray<N> {
     fn bitand(self, rhs: Self) -> Self {
         let mut new_bits = [0; N];
 
-        for ((a, b), x) in
-            self.0.into_iter().zip(rhs.0.into_iter()).zip(&mut new_bits)
-        {
+        for ((a, b), x) in self.0.into_iter().zip(rhs.0).zip(&mut new_bits) {
             *x = a & b;
         }
 
@@ -221,9 +220,7 @@ impl<const N: usize> BitXor for BitArray<N> {
     fn bitxor(self, rhs: Self) -> Self {
         let mut new_bits = [0; N];
 
-        for ((a, b), x) in
-            self.0.into_iter().zip(rhs.0.into_iter()).zip(&mut new_bits)
-        {
+        for ((a, b), x) in self.0.into_iter().zip(rhs.0).zip(&mut new_bits) {
             *x = a ^ b;
         }
 
